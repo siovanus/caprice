@@ -2,7 +2,6 @@ package caprice
 
 import (
 	"encoding/json"
-	"log"
 )
 
 // Generate `n` random integers between `min` and `max`.
@@ -28,11 +27,11 @@ func (rng trueRNG) GenerateSignedIntegers(n, min, max int, replacement bool) (Si
 	}
 
 	return SignedIntegerData{
-		Data:         intArray,
-		Raw:          signedResult.Raw,
-		HashedApiKey: randomData.HashedApiKey,
-		SerialNumber: randomData.SerialNumber,
-		Signature:    signedResult.Signature,
+		Data:           intArray,
+		CompletionTime: randomData.CompletionTime,
+		HashedApiKey:   randomData.HashedApiKey,
+		SerialNumber:   randomData.SerialNumber,
+		Signature:      signedResult.Signature,
 	}, Error{}
 }
 
@@ -185,30 +184,4 @@ func (rng trueRNG) GenerateSignedBlobs(n, size int, format string) (SignedString
 		SerialNumber: randomData.SerialNumber,
 		Signature:    signedResult.Signature,
 	}, Error{}
-}
-
-// Currently broken - API consistently claims authenticity is false.
-//
-// This method verifies that received random data actually originates from RANDOM.org, given a raw `random`
-// JSON that is exactly what is given to you by Signed<Int|Float|String>Data.Raw and a `signature`, also contained
-// in Signed<Int|Float|String>Data.Signature.
-func (rng trueRNG) VerifySignature(random json.RawMessage, signature string) (bool, Error) {
-
-	log.Print("Method VerifySignature is currently broken and under active maintenance. Do not expect accurate results.")
-
-	// it turns out json.RawMessage does not survive across multiple marshalings. Our random data is
-	// interpreted as a byte array, and its base64 encoding is sent along. To prevent this, we unmarshal
-	// into an object first, and then have _request encode it into JSON again.
-	var object map[string]interface{}
-	json.Unmarshal(random, &object)
-
-	body := VerifySignatureReq{Raw: object, Signature: signature}
-	result, err := SignedRequest("verifySignature", body)
-
-	if err.Message != "" {
-		return false, err
-	}
-
-	return result.(VerifiedSignature).Authenticity, Error{}
-
 }

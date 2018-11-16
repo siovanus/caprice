@@ -24,30 +24,6 @@ func TestGenerateIntegers(t *testing.T) {
 	})
 }
 
-func TestGenerateSignedIntegers(t *testing.T) {
-
-	t.Run("Test GenerateSignedIntegers network call", func(t *testing.T) {
-		if os.Getenv("APIKEY") == "" {
-			t.Skip("Skipping direct network call tests because APIKEY env variable is not set")
-		}
-		rng := TrueRNG(os.Getenv("APIKEY"))
-		result, err := rng.GenerateSignedIntegers(5, 1, 10, true)
-		if err.Message != "" {
-			t.Error(err)
-		}
-
-		t.Run("Verify signature", func(t *testing.T) {
-			result, err := rng.VerifySignature(result.Raw, result.Signature)
-			if err.Message != "" {
-				t.Error(err)
-			}
-			if result == false {
-				t.Error("Signature verification failed. Known issue: https://github.com/AkshatM/caprice/issues/6")
-			}
-		})
-	})
-}
-
 func TestGenerateDecimalFractions(t *testing.T) {
 	t.Run("Test GenerateDecimalFractions network call", func(t *testing.T) {
 		if os.Getenv("APIKEY") == "" {

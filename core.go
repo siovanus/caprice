@@ -97,11 +97,11 @@ type Random struct {
 }
 
 type SignedIntegerData struct {
-	Raw          json.RawMessage
-	HashedApiKey string
-	SerialNumber int
-	Data         []int
-	Signature    string
+	CompletionTime string
+	HashedApiKey   string
+	SerialNumber   int
+	Data           []int
+	Signature      string
 }
 
 type SignedFloatData struct {
